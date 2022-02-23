@@ -4,6 +4,6 @@
   },
   "scripts": {
     "start": "supabase start",
-    "run": "node main.js"
+    "bug": "node main.js"
   }
 }
