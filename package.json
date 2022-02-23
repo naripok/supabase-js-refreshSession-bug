@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^1.30.6"
+  },
+  "scripts": {
+    "start": "supabase start",
+    "run": "node main.js"
+  }
+}
