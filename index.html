@@ -1,0 +1,63 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+  function initSupabase() {
+    const supabaseAdminClient = window.supabase.createClient(
+      "http://localhost:54321",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.M2d2z4SFn5C7HlJlaSLfrzuYim9nbY_XI40uWFN3hEE"
+    );
+    window.supabase = supabaseAdminClient;
+  }
+
+  async function supaTest() {
+    initSupabase();
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log(event, session);
+    });
+    const { user: signUpUser, error: signUpError } = await supabase.auth.signUp(
+      {
+        email: "testr@test.de",
+        password: "password",
+      }
+    );
+    console.log("signUpUser", signUpUser);
+    console.error("signUpError", signUpError);
+
+    const { error: confirmEmailError, user: confirmEmailUser } =
+      await supabase.auth.api.updateUserById(signUpUser.id, {
+        email_confirm: true,
+      });
+    console.log("confirmEmailUser", confirmEmailUser);
+    console.error("confirmEmailError", confirmEmailError);
+
+    const { user, error: signInError } = await supabase.auth.signIn({
+      email: "testr@test.de",
+      password: "password",
+    });
+    console.error("signInError", signInError);
+    console.log("signInUser", user);
+
+    const session = supabase.auth.session();
+    console.log("session", session);
+
+    // Update user metadata
+    await supabase.auth.api.updateUserById(supabase.auth.user().id, {
+      app_metadata: { hello: "world" },
+      user_metadata: { hello: "world" },
+    });
+
+    // Get user from API
+    const { error: getUserError, user: getUserUser } =
+      await supabase.auth.api.getUser(supabase.auth.session().access_token);
+    console.error("getUserError", getUserError);
+    console.log("getUserUser", getUserUser);
+
+    const { data: newSession, error: refreshSessionError } =
+      await supabase.auth.refreshSession();
+
+    console.error("refreshSessionError", refreshSessionError);
+    console.log("newSession", newSession);
+  }
+  supaTest()
+</script>
